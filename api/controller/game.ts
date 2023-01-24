@@ -10,21 +10,22 @@ export default class GameController {
     res.status(200).send(data)
   }
 
-  static putGameInactive =async (req:Request, res: Response) => {
-    try{
-        const { context } = req
-    const id = req.params.id
-    const {isActive} = req.body
-    const data = await context?.query.Game.updateOne({where:{id},  data: {
-        isActive: !isActive
-    }})
-    res.status(200).send(200)
+  static putGameInactive = async (req: Request, res: Response) => {
+    try {
+      const { context } = req
+      const id = req.params.id
+      const { isActive } = req.body
+      const data = await context?.query.Game.updateOne({
+        where: { id },
+        data: {
+          isActive: !isActive,
+        },
+      })
+      res.status(200).send(200)
+    } catch (err) {
+      res.status(500).send(err)
     }
-    catch(err){
-        res.status(500).send(err)
-    }
-    
-  } 
+  }
 
   static getGameDetail = async (req: Request, res: Response) => {
     const { context } = req
