@@ -18,23 +18,25 @@ model User {
   email     String    @unique @default("")
   isAdmin   Boolean   @default(false)
   password  String
-  games     Game[]    @relation("Game_player")
+  games     Game[]    @relation("User_games")
   createdAt DateTime? @default(now())
 }
 
 model Game {
-  id          String    @id @default(cuid())
-  name        String    @default("")
-  description String    @default("")
-  version     Float
-  createdAt   DateTime? @default(now()) @map("created_at")
-  modifiedAt  DateTime? @default(now()) @map("modified_at")
-  active      Boolean   @default(false)
-  tags        Tag[]     @relation("Game_tags")
-  player      User?     @relation("Game_player", fields: [playerId], references: [id])
-  playerId    String?   @map("player")
-
-  @@index([playerId])
+  id              String    @id @default(cuid())
+  name            String    @default("")
+  description     String    @default("")
+  version         Float
+  createdAt       DateTime? @default(now()) @map("created_at")
+  modifiedAt      DateTime? @default(now()) @map("modified_at")
+  image_filesize  Int?
+  image_extension String?
+  image_width     Int?
+  image_height    Int?
+  image_id        String?
+  active          Boolean   @default(false)
+  tags            Tag[]     @relation("Game_tags")
+  from_User_games User[]    @relation("User_games")
 }
 
 model Tag {

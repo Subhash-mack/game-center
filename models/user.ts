@@ -16,7 +16,7 @@ const User = list({
       isAdmin: checkbox(),
 
       password: password({ validation: { isRequired: true } }),
-      games: relationship({ ref: 'Game.player', many: true }),
+      games: relationship({ ref: 'Game', many: true }),
       createdAt: timestamp({
         defaultValue: { kind: 'now' },
       }),

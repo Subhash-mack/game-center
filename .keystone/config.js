@@ -1,7 +1,9 @@
 "use strict";
+var __create = Object.create;
 var __defProp = Object.defineProperty;
 var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
 var __getOwnPropNames = Object.getOwnPropertyNames;
+var __getProtoOf = Object.getPrototypeOf;
 var __hasOwnProp = Object.prototype.hasOwnProperty;
 var __export = (target, all) => {
   for (var name in all)
@@ -15,6 +17,10 @@ var __copyProps = (to, from, except, desc) => {
   }
   return to;
 };
+var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__getProtoOf(mod)) : {}, __copyProps(
+  isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: true }) : target,
+  mod
+));
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 
 // keystone.ts
@@ -24,6 +30,7 @@ __export(keystone_exports, {
 });
 module.exports = __toCommonJS(keystone_exports);
 var import_core5 = require("@keystone-6/core");
+var dotenv = __toESM(require("dotenv"));
 
 // models/user.ts
 var import_core = require("@keystone-6/core");
@@ -39,7 +46,7 @@ var User = (0, import_core.list)({
     }),
     isAdmin: (0, import_fields.checkbox)(),
     password: (0, import_fields.password)({ validation: { isRequired: true } }),
-    games: (0, import_fields.relationship)({ ref: "Game.player", many: true }),
+    games: (0, import_fields.relationship)({ ref: "Game", many: true }),
     createdAt: (0, import_fields.timestamp)({
       defaultValue: { kind: "now" }
     })
@@ -79,6 +86,7 @@ var game_default = (0, import_core2.list)({
         return;
       }
     } }),
+    image: (0, import_fields2.image)({ storage: "my_local_images" }),
     active: (0, import_fields2.checkbox)({ defaultValue: false }),
     tags: (0, import_fields2.relationship)({
       ref: "Tag.games",
@@ -91,9 +99,6 @@ var game_default = (0, import_core2.list)({
         inlineConnect: true,
         inlineCreate: { fields: ["name"] }
       }
-    }),
-    player: (0, import_fields2.relationship)({
-      ref: "User.games"
     })
   }
 });
@@ -138,7 +143,7 @@ var lists = {
 var import_crypto = require("crypto");
 var import_auth4 = require("@keystone-6/auth");
 var import_session = require("@keystone-6/core/session");
-var sessionSecret = "-- EXAMPLE COOKIE SECRET; CHANGE ME --";
+var sessionSecret = process.env.SESSION_SECRET;
 if (!sessionSecret && process.env.NODE_ENV !== "production") {
   sessionSecret = (0, import_crypto.randomBytes)(32).toString("hex");
 }
@@ -157,13 +162,38 @@ var session = (0, import_session.statelessSessions)({
   secret: sessionSecret
 });
 
+// models/config.ts
+var storage = {
+  my_local_images: {
+    kind: "local",
+    type: "image",
+    generateUrl: (path) => `${process.env.SERVER_PORT}/images${path}`,
+    serverRoute: {
+      path: "/images"
+    },
+    storagePath: "public/images"
+  },
+  my_local_files: {
+    kind: "local",
+    type: "file",
+    generateUrl: (path) => `${process.env.SERVER_PORT}/files${path}`,
+    serverRoute: {
+      path: "/files"
+    },
+    storagePath: "public/files"
+  }
+};
+var config_default = storage;
+
 // keystone.ts
+dotenv.config();
 var keystone_default = withAuth(
   (0, import_core5.config)({
     db: {
       provider: "sqlite",
       url: "file:./keystone.db"
     },
+    storage: config_default,
     lists,
     session
   })

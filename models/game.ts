@@ -1,6 +1,6 @@
 import { list } from "@keystone-6/core";
 import { operation } from "../helper/auth";
-import { text, relationship, float, timestamp, checkbox } from "@keystone-6/core/fields";
+import { text, relationship, float, timestamp, checkbox, image } from "@keystone-6/core/fields";
 
 export default list({
 
@@ -20,6 +20,7 @@ export default list({
               return;
             },
           }}),
+        image: image({storage:"my_local_images"}),
         active: checkbox({ defaultValue: false }),
         tags: relationship({
             ref: 'Tag.games',
@@ -32,9 +33,6 @@ export default list({
                 inlineConnect: true,
                 inlineCreate: { fields: ['name'] },
             },
-        }),
-        player: relationship({
-            ref: 'User.games'
         })
     }
 
