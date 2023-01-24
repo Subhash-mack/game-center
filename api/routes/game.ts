@@ -5,6 +5,8 @@ const router = Router()
 
 router.route("/games").get(GameController.getGames)
 
-router.route("/games/:id").get(GameController.getGameDetail)
+router.route("/games/:id")
+.get(GameController.getGameDetail)
+.put(GameController.putGameInactive)
 
 export default router

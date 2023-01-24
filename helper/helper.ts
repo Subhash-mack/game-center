@@ -35,3 +35,21 @@ export const getPlayers = (analytics: analytics) => {
   }
   return players
 }
+
+export const getGameAnalytics = (gameName: string, analytics: analytics) => {
+    const graph: { [key: string]: number } = {}
+    for(const user in analytics){
+        analytics[user].map(game=>{
+            if(gameName === Object.keys(game)[0]){
+                const gameData = Object.values(game)[0]
+                gameData.forEach(({date,session})=>{
+                    if(!graph[date])
+                    graph[date] = session
+                    else
+                    graph[date]+=session
+                }) 
+            }
+        })
+    }
+    return graph;
+}

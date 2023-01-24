@@ -16,7 +16,7 @@ export default list({
       db: { map: "modified_at" },
       hooks: {
         resolveInput: ({ resolvedData }) => {
-          if (resolvedData.active !== undefined) {
+          if (resolvedData.isActive !== undefined) {
             return new Date()
           }
           return
