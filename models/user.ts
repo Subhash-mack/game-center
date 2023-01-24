@@ -1,26 +1,25 @@
-import { list } from "@keystone-6/core";
-import { allowAll } from "@keystone-6/core/access";
-import { text, checkbox, password, relationship, timestamp } from "@keystone-6/core/fields";
-
+import { list } from "@keystone-6/core"
+import { allowAll } from "@keystone-6/core/access"
+import { text, checkbox, password, relationship, timestamp } from "@keystone-6/core/fields"
 
 const User = list({
-    access: allowAll,
-    fields: {
-      name: text({ validation: { isRequired: true } }),
+  access: allowAll,
+  fields: {
+    name: text({ validation: { isRequired: true } }),
 
-      email: text({
-        validation: { isRequired: true },
-        isIndexed: 'unique',
-      }),
+    email: text({
+      validation: { isRequired: true },
+      isIndexed: "unique",
+    }),
 
-      isAdmin: checkbox(),
+    isAdmin: checkbox(),
 
-      password: password({ validation: { isRequired: true } }),
-      games: relationship({ ref: 'Game', many: true }),
-      createdAt: timestamp({
-        defaultValue: { kind: 'now' },
-      }),
-    },
-  })
+    password: password({ validation: { isRequired: true } }),
+    games: relationship({ ref: "Game", many: true }),
+    createdAt: timestamp({
+      defaultValue: { kind: "now" },
+    }),
+  },
+})
 
-export default User;
+export default User

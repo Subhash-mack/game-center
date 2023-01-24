@@ -152,7 +152,7 @@ type Game {
   createdAt: DateTime
   modifiedAt: DateTime
   image: ImageFieldOutput
-  active: Boolean
+  isActive: Boolean
   tags(where: TagWhereInput! = {}, orderBy: [TagOrderByInput!]! = [], take: Int, skip: Int! = 0): [Tag!]
   tagsCount(where: TagWhereInput! = {}): Int
 }
@@ -187,7 +187,7 @@ input GameWhereInput {
   version: FloatFilter
   createdAt: DateTimeNullableFilter
   modifiedAt: DateTimeNullableFilter
-  active: BooleanFilter
+  isActive: BooleanFilter
   tags: TagManyRelationFilter
 }
 
@@ -215,7 +215,7 @@ input GameOrderByInput {
   version: OrderDirection
   createdAt: OrderDirection
   modifiedAt: OrderDirection
-  active: OrderDirection
+  isActive: OrderDirection
 }
 
 input GameUpdateInput {
@@ -225,7 +225,7 @@ input GameUpdateInput {
   createdAt: DateTime
   modifiedAt: DateTime
   image: ImageFieldInput
-  active: Boolean
+  isActive: Boolean
   tags: TagRelateToManyForUpdateInput
 }
 
@@ -255,7 +255,7 @@ input GameCreateInput {
   createdAt: DateTime
   modifiedAt: DateTime
   image: ImageFieldInput
-  active: Boolean
+  isActive: Boolean
   tags: TagRelateToManyForCreateInput
 }
 

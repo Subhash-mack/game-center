@@ -1,6 +1,6 @@
 export type Session = {
-    data: {
-      id: string;
-      isAdmin: boolean;
-    }
+  data: {
+    id: string
+    isAdmin: boolean
   }
+}

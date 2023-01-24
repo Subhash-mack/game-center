@@ -6,7 +6,8 @@
 //   you can find out more at https://keystonejs.com/docs/apis/config
 
 import { config } from '@keystone-6/core';
-import * as dotenv from "dotenv"
+import * as dotenv from "dotenv";
+import express from "express";
 
 // to keep this file tidy, we define our schema in a different file
 import { lists } from './models/schema';
@@ -15,6 +16,7 @@ import { lists } from './models/schema';
 // when you write your list-level access control functions, as they typically rely on session data
 import { withAuth, session } from './auth';
 import storage from './models/config';
+import server from './server';
 
 dotenv.config();
 
@@ -30,5 +32,8 @@ export default withAuth(
     storage,
     lists,
     session,
+    server: {
+      extendExpressApp: server
+    }
   })
 );

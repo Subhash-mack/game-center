@@ -34,7 +34,7 @@ model Game {
   image_width     Int?
   image_height    Int?
   image_id        String?
-  active          Boolean   @default(false)
+  isActive        Boolean   @default(false)
   tags            Tag[]     @relation("Game_tags")
   from_User_games User[]    @relation("User_games")
 }
