@@ -5,6 +5,7 @@ var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
 var __getOwnPropNames = Object.getOwnPropertyNames;
 var __getProtoOf = Object.getPrototypeOf;
 var __hasOwnProp = Object.prototype.hasOwnProperty;
+var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
 var __export = (target, all) => {
   for (var name in all)
     __defProp(target, name, { get: all[name], enumerable: true });
@@ -22,6 +23,10 @@ var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__ge
   mod
 ));
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
+var __publicField = (obj, key, value) => {
+  __defNormalProp(obj, typeof key !== "symbol" ? key + "" : key, value);
+  return value;
+};
 
 // keystone.ts
 var keystone_exports = {};
@@ -78,16 +83,20 @@ var game_default = (0, import_core2.list)({
     description: (0, import_fields2.text)({ validation: { isRequired: true, length: { min: 20 } } }),
     version: (0, import_fields2.float)({ validation: { isRequired: true, min: 1 } }),
     createdAt: (0, import_fields2.timestamp)({ defaultValue: { kind: "now" }, db: { map: "created_at" } }),
-    modifiedAt: (0, import_fields2.timestamp)({ defaultValue: { kind: "now" }, db: { map: "modified_at" }, hooks: {
-      resolveInput: ({ resolvedData }) => {
-        if (resolvedData.active !== void 0) {
-          return new Date();
+    modifiedAt: (0, import_fields2.timestamp)({
+      defaultValue: { kind: "now" },
+      db: { map: "modified_at" },
+      hooks: {
+        resolveInput: ({ resolvedData }) => {
+          if (resolvedData.isActive !== void 0) {
+            return new Date();
+          }
+          return;
         }
-        return;
       }
-    } }),
+    }),
     image: (0, import_fields2.image)({ storage: "my_local_images" }),
-    active: (0, import_fields2.checkbox)({ defaultValue: false }),
+    isActive: (0, import_fields2.checkbox)({ defaultValue: false }),
     tags: (0, import_fields2.relationship)({
       ref: "Tag.games",
       many: true,
@@ -185,6 +194,156 @@ var storage = {
 };
 var config_default = storage;
 
+// server.ts
+var import_express3 = __toESM(require("express"));
+var import_cors = __toESM(require("cors"));
+
+// api/routes/analytics.ts
+var import_express = require("express");
+
+// helper/helper.ts
+var calculateTotalSession = (sessions) => {
+  return sessions.reduce((acc, val) => {
+    return acc + val.session;
+  }, 0);
+};
+var getGames = (analytics) => {
+  const games = {};
+  for (const user in analytics) {
+    analytics[user].map((game) => {
+      const gameData = Object.values(game)[0];
+      const gameName = Object.keys(game)[0];
+      if (!games[gameName]) {
+        games[gameName] = calculateTotalSession(gameData);
+      } else {
+        games[gameName] += calculateTotalSession(gameData);
+      }
+    });
+  }
+  return games;
+};
+var getPlayers = (analytics) => {
+  const players = {};
+  for (const user in analytics) {
+    analytics[user].map((game) => {
+      const gameData = Object.values(game)[0];
+      if (!players[user]) {
+        players[user] = calculateTotalSession(gameData);
+      } else {
+        players[user] += calculateTotalSession(gameData);
+      }
+    });
+  }
+  return players;
+};
+var getGameAnalytics = (gameName, analytics) => {
+  const graph = {};
+  for (const user in analytics) {
+    analytics[user].map((game) => {
+      if (gameName === Object.keys(game)[0]) {
+        const gameData = Object.values(game)[0];
+        gameData.forEach(({ date, session: session2 }) => {
+          if (!graph[date])
+            graph[date] = session2;
+          else
+            graph[date] += session2;
+        });
+      }
+    });
+  }
+  return graph;
+};
+
+// api/controller/analytics.ts
+var AnalyticController = class {
+};
+__publicField(AnalyticController, "topGames", async (req, res) => {
+  const { context } = req;
+  const data = await context?.query.Analytic.findMany({ query: "id analytics" });
+  const analytics = data?.[0]?.analytics;
+  res.status(200).send(getGames(analytics));
+});
+__publicField(AnalyticController, "topPlayers", async (req, res) => {
+  const { context } = req;
+  const data = await context?.query.Analytic.findMany({ query: "id analytics" });
+  const analytics = data?.[0]?.analytics;
+  res.status(200).send(getPlayers(analytics));
+});
+
+// api/middleware/cache-control.ts
+var cacheControl = (value) => (_, res, next) => {
+  res.header("Cache-Control", value);
+  if (value === "no-cache, no-store, must-revalidate" /* NO_STORE */) {
+    res.header("Pragma", "no-cache");
+    res.header("Expires", "0");
+  }
+  return next();
+};
+
+// api/routes/analytics.ts
+var router = (0, import_express.Router)();
+router.route("/top-players").get(cacheControl("max-age=900" /* MAX_AGE_DEFAULT */), AnalyticController.topPlayers);
+router.route("/top-games").get(cacheControl("max-age=900" /* MAX_AGE_DEFAULT */), AnalyticController.topGames);
+var analytics_default2 = router;
+
+// api/routes/game.ts
+var import_express2 = require("express");
+
+// api/controller/game.ts
+var GameController = class {
+};
+__publicField(GameController, "getGames", async (req, res) => {
+  const { context } = req;
+  const data = await context?.query.Game.findMany({
+    query: "id, image {id, url} tags {id, name} name, isActive, modifiedAt"
+  });
+  res.status(200).send(data);
+});
+__publicField(GameController, "putGameInactive", async (req, res) => {
+  try {
+    const { context } = req;
+    const id = req.params.id;
+    const { isActive } = req.body;
+    const data = await context?.query.Game.updateOne({
+      where: { id },
+      data: {
+        isActive: !isActive
+      }
+    });
+    res.status(200).send(200);
+  } catch (err) {
+    res.status(500).send(err);
+  }
+});
+__publicField(GameController, "getGameDetail", async (req, res) => {
+  const { context } = req;
+  const id = req.params.id;
+  const gameData = await context?.query.Game.findOne({
+    where: { id },
+    query: "id, name, description, createdAt,modifiedAt, isActive,image {id, url} tags {id, name}"
+  });
+  const analyticsData = await context?.query.Analytic.findMany({ query: "id analytics" });
+  const analytics = analyticsData?.[0]?.analytics;
+  const result = { ...gameData, graph: getGameAnalytics(gameData?.name, analytics) };
+  res.status(200).send(result);
+});
+
+// api/routes/game.ts
+var router2 = (0, import_express2.Router)();
+router2.route("/games").get(cacheControl("max-age=900" /* MAX_AGE_DEFAULT */), GameController.getGames);
+router2.route("/games/:id").get(cacheControl("max-age=900" /* MAX_AGE_DEFAULT */), GameController.getGameDetail).put(GameController.putGameInactive);
+var game_default2 = router2;
+
+// server.ts
+var server_default = (app, context) => {
+  app.use((0, import_cors.default)());
+  app.use(import_express3.default.json({ limit: "2mb" }));
+  app.use("/api/v1", async (req, res, next) => {
+    req.context = await context.withRequest(req, res);
+    next();
+  }, analytics_default2, game_default2);
+};
+
 // keystone.ts
 dotenv.config();
 var keystone_default = withAuth(
@@ -195,7 +354,10 @@ var keystone_default = withAuth(
     },
     storage: config_default,
     lists,
-    session
+    session,
+    server: {
+      extendExpressApp: server_default
+    }
   })
 );
 // Annotate the CommonJS export names for ESM import in node:
