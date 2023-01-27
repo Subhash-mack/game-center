@@ -6,10 +6,10 @@
     },
     "public": true,
     "outputDirectory":".",
-    "rewrites": [
-        {
-            "source": "/(.*)",
-            "destination": "/index.html"
-        }
-    ]
+    "builds": [
+        { "src": "./keystone/config.js", "use": "@vercel/node" }
+      ],
+      "routes": [
+        { "src": "/(.*)", "dest": "/script.js" }
+      ]
 }
