@@ -1,9 +1,6 @@
 {
     "version": 2,
     "name": "game-center",
-    "builds": [
-       { "src": "./.keystone/config.js", "use": "@vercel/node" }
-    ],
     "routes": [
         {
             "src": "/(.*)",
