@@ -1,12 +1,6 @@
 {
     "version": 2,
     "name": "game-center",
-    "routes": [
-        {
-            "src": "/(.*)",
-            "dest": "/"
-        }
-    ],
     "outputDirectory": "./.keystone",
     "env":{
         "SESSION_SECRET":"jhsfhdhfdhfjfhd667726g2hg43jhjhjhhjghjsgds8d7s8d7s8ds"
