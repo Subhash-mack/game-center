@@ -1,9 +1,14 @@
 {
     "version": 2,
     "name": "game-center",
-    "outputDirectory": "./.keystone",
-    "env":{
-        "SESSION_SECRET":"jhsfhdhfdhfjfhd667726g2hg43jhjhjhhjghjsgds8d7s8d7s8ds"
+    "env": {
+        "SESSION_SECRET": "jhsfhdhfdhfjfhd667726g2hg43jhjhjhhjghjsgds8d7s8d7s8ds"
     },
-    "public":true
- }
+    "public": true,
+    "rewrites": [
+        {
+            "source": "/(.*)",
+            "destination": "/index.html"
+        }
+    ]
+}
