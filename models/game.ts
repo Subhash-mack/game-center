@@ -13,15 +13,7 @@ export default list({
     createdAt: timestamp({ defaultValue: { kind: "now" }, db: { map: "created_at" } }),
     modifiedAt: timestamp({
       defaultValue: { kind: "now" },
-      db: { map: "modified_at" },
-      hooks: {
-        resolveInput: ({ resolvedData }) => {
-          if (resolvedData.isActive !== undefined) {
-            return new Date()
-          }
-          return
-        },
-      },
+      db: { map: "modified_at", updatedAt: true },
     }),
     image: image({ storage: "my_local_images" }),
     isActive: checkbox({ defaultValue: false }),

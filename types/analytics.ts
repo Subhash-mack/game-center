@@ -4,7 +4,10 @@ export type session = {
 }
 
 export interface analytics {
-  [key: string]: {
-    [key: string]: session[]
-  }[]
+  id: string
+  analytics: {
+    [key: string]: {
+      [key: string]: session[]
+    }[]
+  }
 }

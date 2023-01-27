@@ -5,11 +5,11 @@ import { cacheControl, CACHE_CONTROL } from "../middleware/cache-control"
 const router = Router()
 
 router
-  .route("/top-players")
+  .route("/players/stats")
   .get(cacheControl(CACHE_CONTROL.MAX_AGE_DEFAULT), AnalyticController.topPlayers)
 
 router
-  .route("/top-games")
+  .route("/games/stats")
   .get(cacheControl(CACHE_CONTROL.MAX_AGE_DEFAULT), AnalyticController.topGames)
 
 export default router
