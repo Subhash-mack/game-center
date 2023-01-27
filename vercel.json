@@ -7,7 +7,7 @@
             "dest": "/"
         }
     ],
-    "outputDirectory": "./keystone",
+    "outputDirectory": "./keystone/admin/.next",
     "env":{
         "SESSION_SECRET":"jhsfhdhfdhfjfhd667726g2hg43jhjhjhhjghjsgds8d7s8d7s8ds"
     },
