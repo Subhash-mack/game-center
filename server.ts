@@ -4,15 +4,6 @@ import { Context } from "@keystone-6/core/dist/declarations/src/types/schema/gra
 import analyticsRouter from "./api/routes/analytics"
 import gameRouter from "./api/routes/game";
 
-
-declare global {
-    namespace Express {
-      interface Request {
-        context?: Context
-      }
-    }
-  }
-  
 export default (app: Express, context: Context) => {
     app.use(cors());
     app.use(express.json({limit:"2mb"}))
