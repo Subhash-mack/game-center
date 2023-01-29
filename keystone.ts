@@ -28,6 +28,7 @@ export default withAuth(
       //   see https://keystonejs.com/docs/guides/choosing-a-database#title
       provider: 'sqlite',
       url: 'file:./keystone.db',
+      useMigrations: true,
     },
     storage,
     lists,
