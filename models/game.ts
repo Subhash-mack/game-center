@@ -4,7 +4,7 @@ import { text, relationship, float, timestamp, checkbox, image } from "@keystone
 
 export default list({
   access: {
-    operation,
+   operation: operation(true),
   },
   fields: {
     name: text({ validation: { isRequired: true, length: { min: 3, max: 30 } } }),

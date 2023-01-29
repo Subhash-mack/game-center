@@ -1,6 +1,6 @@
 import { Request, Response } from "express"
 import { getGameAnalytics } from "../../helper/helper"
-import { analytics } from "../../types/analytics"
+import { Analytics } from "../../types/analytics"
 
 export default class GameController {
   static getGames = async (req: Request, res: Response) => {
@@ -43,9 +43,14 @@ export default class GameController {
       })
       const analyticsData = (await context?.query.Analytic.findMany({
         query: "id analytics",
-      })) as analytics[]
-      const result = { ...gameData, graph: getGameAnalytics(gameData?.name, analyticsData) }
-      res.status(200).send(result)
+      })) as Analytics[]
+      if(gameData){
+        const result = { ...gameData, graph: getGameAnalytics(gameData?.name, analyticsData) }
+        res.status(200).send(result)
+      }
+      else{
+        res.status(400).send({message:"Invalid Id"})
+      }
     } catch (err) {
       res.status(500).send(err)
     }

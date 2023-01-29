@@ -1,13 +1,18 @@
-export type session = {
+export type Session = {
   session: number
   date: string
 }
 
-export interface analytics {
+export interface Analytics {
   id: string
   analytics: {
     [key: string]: {
-      [key: string]: session[]
+      [key: string]: Session[]
     }[]
   }
+}
+
+export type AnalyticsGraph = {
+  totalSessions: { [key: string]: number }
+  avgSessions: { [key: string]: number }
 }

@@ -1,6 +1,6 @@
 import { Request, Response } from "express"
 import { getGames, getPlayers } from "../../helper/helper"
-import { analytics } from "../../types/analytics"
+import { Analytics } from "../../types/analytics"
 
 export default class AnalyticController {
   static topGames = async (req: Request, res: Response) => {
@@ -8,8 +8,7 @@ export default class AnalyticController {
       const { context } = req
       const analytics = (await context?.query.Analytic.findMany({
         query: "id analytics",
-      })) as analytics[]
-      console.log(analytics)
+      })) as Analytics[]
       res.status(200).send(getGames(analytics))
     } catch (err: any) {
       res.status(500).send(err)
@@ -21,7 +20,7 @@ export default class AnalyticController {
       const { context } = req
       const analytics = (await context?.query.Analytic.findMany({
         query: "id analytics",
-      })) as analytics[]
+      })) as Analytics[]
       res.status(200).send(getPlayers(analytics))
     } catch (err) {
       res.status(500).send(err)
