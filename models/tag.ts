@@ -5,7 +5,7 @@ import { operation } from "../helper/auth"
 
 export default list({
   access: {
-    operation,
+    operation: operation(),
   },
   ui: {
     isHidden: true,

@@ -4,7 +4,7 @@ import { operation } from "../helper/auth"
 
 export default list({
   access: {
-    operation,
+    operation: operation(),
   },
   fields: {
     analytics: json(),

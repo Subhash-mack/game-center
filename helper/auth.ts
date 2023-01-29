@@ -3,9 +3,9 @@ import { Session } from "../types/auth"
 
 const isAdmin = ({ session }: { session: Session }) => session?.data?.isAdmin
 
-export const operation = {
+export const operation = (update: boolean = false) => ({
   query: allowAll,
   create: isAdmin,
-  update: isAdmin,
+  update: update ? allowAll: isAdmin,
   delete: isAdmin,
-}
+})
