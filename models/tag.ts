@@ -12,7 +12,7 @@ export default list({
   },
 
   fields: {
-    name: text({isIndexed: 'unique'}),
+    name: text({ isIndexed: "unique" }),
     // this can be helpful to find out all the Posts associated with a Tag
     games: relationship({ ref: "Game.tags", many: true }),
   },

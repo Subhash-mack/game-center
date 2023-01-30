@@ -23,10 +23,10 @@ export default class GameController {
       const data = await context?.query.Game.updateOne({
         where: { id },
         data: {
-          isActive: !isActive,
+          isActive,
         },
       })
-      res.status(200).send(200)
+      res.status(200).send("ok")
     } catch (err) {
       res.status(500).send(err)
     }
@@ -44,12 +44,11 @@ export default class GameController {
       const analyticsData = (await context?.query.Analytic.findMany({
         query: "id analytics",
       })) as Analytics[]
-      if(gameData){
+      if (gameData) {
         const result = { ...gameData, graph: getGameAnalytics(gameData?.name, analyticsData) }
         res.status(200).send(result)
-      }
-      else{
-        res.status(400).send({message:"Invalid Id"})
+      } else {
+        res.status(400).send({ message: "Invalid Id" })
       }
     } catch (err) {
       res.status(500).send(err)

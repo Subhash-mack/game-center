@@ -59,8 +59,7 @@ export const getGameAnalytics = (gameName: string, analytics: Analytics[]) => {
     const [month, year] = date.split("-")
     const days = months[month]
     graph.avgSessions[date] = Math.round(
-      graph.avgSessions[date] /
-        (month === "Feb" && isLeapYear(Number(year)) ? days + 1 : days)
+      graph.avgSessions[date] / (month === "Feb" && isLeapYear(Number(year)) ? days + 1 : days)
     )
   }
   return graph
