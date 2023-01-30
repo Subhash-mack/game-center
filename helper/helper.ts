@@ -1,3 +1,4 @@
+import { months } from "../config/constants"
 import { Session, Analytics, AnalyticsGraph } from "../types/analytics"
 
 const calculateTotalSession = (sessions: Session[]) => {
@@ -5,6 +6,9 @@ const calculateTotalSession = (sessions: Session[]) => {
     return acc + val.session
   }, 0)
 }
+
+const isLeapYear = (year: number) => year % 400 === 0 || (year % 100 !== 0 && year % 4 === 0)
+
 export const getGames = (analytics: Analytics[]) => {
   const games: { [key: string]: number } = {}
   for (const analytic of analytics) {
@@ -43,13 +47,21 @@ export const getGameAnalytics = (gameName: string, analytics: Analytics[]) => {
         if (gameName === Object.keys(game)[0]) {
           const gameData = Object.values(game)[0]
           gameData.forEach(({ date, session }) => {
-            const month = date.split("-")[1]
-            graph.avgSessions[month] = (graph.avgSessions[month] || 0) + session
+            const monthYear = date.split("-").slice(1).join("-")
+            graph.avgSessions[monthYear] = (graph.avgSessions[monthYear] || 0) + session
             graph.totalSessions[date] = (graph.totalSessions[date] || 0) + session
           })
         }
       })
     }
+  }
+  for (const date in graph.avgSessions) {
+    const [month, year] = date.split("-")
+    const days = months[month]
+    graph.avgSessions[date] = Math.round(
+      graph.avgSessions[date] /
+        (month === "Feb" && isLeapYear(Number(year)) ? days + 1 : days)
+    )
   }
   return graph
 }
