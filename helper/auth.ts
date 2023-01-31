@@ -6,6 +6,6 @@ const isAdmin = ({ session }: { session: Session }) => session?.data?.isAdmin
 export const operation = (update: boolean = false) => ({
   query: allowAll,
   create: isAdmin,
-  update: update ? allowAll: isAdmin,
+  update: update ? allowAll : isAdmin,
   delete: isAdmin,
 })
