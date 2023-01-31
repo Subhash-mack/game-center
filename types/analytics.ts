@@ -13,6 +13,6 @@ export interface Analytics {
 }
 
 export type AnalyticsGraph = {
-  totalSessions: { [key: string]: number }
-  avgSessions: { [key: string]: number }
+  totalSessions: { date: string; session: number }[]
+  avgSessions: { date: string; session: number }[]
 }

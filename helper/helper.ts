@@ -1,5 +1,9 @@
 import { months } from "../config/constants"
-import { Session, Analytics, AnalyticsGraph } from "../types/analytics"
+import { Session, Analytics } from "../types/analytics"
+
+export const isValidDate = (date: string) => !Number.isNaN(new Date(date).getTime())
+
+export const getDate = (date?: string) => (date ? new Date(date) : new Date())
 
 const calculateTotalSession = (sessions: Session[]) => {
   return sessions.reduce((acc: number, val) => {
@@ -7,9 +11,15 @@ const calculateTotalSession = (sessions: Session[]) => {
   }, 0)
 }
 
+const filterByDate = (sessions: Session[], startDate: Date, endDate: Date) =>
+  sessions.filter(session => {
+    const date = getDate(session.date)
+    return date >= startDate && date <= endDate
+  })
+
 const isLeapYear = (year: number) => year % 400 === 0 || (year % 100 !== 0 && year % 4 === 0)
 
-export const getGames = (analytics: Analytics[]) => {
+export const getGamesByDates = (analytics: Analytics[], startDate: Date, endDate: Date) => {
   const games: { [key: string]: number } = {}
   for (const analytic of analytics) {
     const analyticsData = analytic["analytics"]
@@ -17,29 +27,34 @@ export const getGames = (analytics: Analytics[]) => {
       analyticsData[user].map(game => {
         const gameData = Object.values(game)[0]
         const gameName = Object.keys(game)[0]
-        games[gameName] = (games[gameName] || 0) + calculateTotalSession(gameData)
+        games[gameName] =
+          (games[gameName] || 0) + calculateTotalSession(filterByDate(gameData, startDate, endDate))
       })
     }
   }
-  return games
+  const statDetails = convertObjectToArray(games, "name", "session")
+  return { statDetails, results: statDetails.length }
 }
 
-export const getPlayers = (analytics: Analytics[]) => {
+export const getPlayersByDates = (analytics: Analytics[], startDate: Date, endDate: Date) => {
   const players: { [key: string]: number } = {}
   for (const analytic of analytics) {
     const analyticsData = analytic["analytics"]
     for (const user in analyticsData) {
       analyticsData[user].map(game => {
         const gameData = Object.values(game)[0]
-        players[user] = (players[user] || 0) + calculateTotalSession(gameData)
+        players[user] =
+          (players[user] || 0) + calculateTotalSession(filterByDate(gameData, startDate, endDate))
       })
     }
   }
-  return players
+  const statDetails = convertObjectToArray(players, "name", "session")
+  return { statDetails, results: statDetails.length }
 }
 
 export const getGameAnalytics = (gameName: string, analytics: Analytics[]) => {
-  const graph: AnalyticsGraph = { totalSessions: {}, avgSessions: {} }
+  const totalSessions: { [key: string]: number } = {}
+  const avgSessions: { [key: string]: number } = {}
   for (const analytic of analytics) {
     const analyticsData = analytic["analytics"]
     for (const user in analyticsData) {
@@ -48,19 +63,29 @@ export const getGameAnalytics = (gameName: string, analytics: Analytics[]) => {
           const gameData = Object.values(game)[0]
           gameData.forEach(({ date, session }) => {
             const monthYear = date.split("-").slice(1).join("-")
-            graph.avgSessions[monthYear] = (graph.avgSessions[monthYear] || 0) + session
-            graph.totalSessions[date] = (graph.totalSessions[date] || 0) + session
+            avgSessions[monthYear] = (avgSessions[monthYear] || 0) + session
+            totalSessions[date] = (totalSessions[date] || 0) + session
           })
         }
       })
     }
   }
-  for (const date in graph.avgSessions) {
+  for (const date in avgSessions) {
     const [month, year] = date.split("-")
     const days = months[month]
-    graph.avgSessions[date] = Math.round(
-      graph.avgSessions[date] / (month === "Feb" && isLeapYear(Number(year)) ? days + 1 : days)
+    avgSessions[date] = Math.round(
+      avgSessions[date] / (month === "Feb" && isLeapYear(Number(year)) ? days + 1 : days)
     )
   }
-  return graph
+
+  return {
+    totalSessions: convertObjectToArray(totalSessions, "date", "session"),
+    avgSessions: convertObjectToArray(avgSessions, "date", "session"),
+  }
 }
+
+export const convertObjectToArray = (
+  data: { [key: string]: number },
+  prop1: string,
+  prop2: string
+) => Object.entries(data).map(([key1, key2]) => ({ [prop1]: key1, [prop2]: key2 }))
