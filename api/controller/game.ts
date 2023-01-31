@@ -7,7 +7,7 @@ export default class GameController {
     try {
       const { context } = req
       const data = await context?.query.Game.findMany({
-        query: "id, image {id, url} tags {id, name} name, isActive, modifiedAt",
+        query: "id, image {id, url} tags {id, name} name, isActive, version, modifiedAt",
       })
       res.status(200).send(data)
     } catch (err) {
@@ -39,7 +39,7 @@ export default class GameController {
       const gameData = await context?.query.Game.findOne({
         where: { id },
         query:
-          "id, name, description, createdAt,modifiedAt, isActive,image {id, url} tags {id, name}",
+          "id, name, description, createdAt,modifiedAt, isActive, version,image {id, url} tags {id, name}",
       })
       const analyticsData = (await context?.query.Analytic.findMany({
         query: "id analytics",
